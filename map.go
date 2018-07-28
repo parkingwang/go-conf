@@ -12,6 +12,11 @@ import (
 
 type Map map[string]interface{}
 
+// MapToMap 将Map[String]Any 转换成Map对象
+func MapToMap(m map[string]interface{}) Map {
+	return m
+}
+
 // GetValueOrDefault 获取指定Key的值。 如果不存在返回默认值。
 func (m Map) GetValueOrDefault(key string, def interface{}) (interface{}, bool) {
 	if val, ok := m[key]; ok {

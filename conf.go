@@ -1,13 +1,13 @@
 package conf
 
 import (
-	"os"
 	"bytes"
-	"io/ioutil"
-	"strings"
 	"fmt"
 	"github.com/pelletier/go-toml"
 	"github.com/pkg/errors"
+	"io/ioutil"
+	"os"
+	"strings"
 )
 
 //
@@ -15,6 +15,7 @@ import (
 // 加载配置文件
 //
 
+// LoadConfig 读取一个TOML文件或者文件夹内所有TOML文件，返回一个Map对象。
 func LoadConfig(dirOrFile string) (Map, error) {
 	if "" == dirOrFile {
 		return nil, errors.New("Dir or file path is required")
@@ -48,6 +49,7 @@ func LoadConfig(dirOrFile string) (Map, error) {
 
 }
 
+// LoadDirConfigText 加载指定TOML配置文件目录，返回所有配置文件的合并Text文本；
 func LoadDirConfigText(dirName string) ([]byte, error) {
 	out := new(bytes.Buffer)
 	if files, err := ioutil.ReadDir(dirName); nil != err {
