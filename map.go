@@ -1,6 +1,7 @@
 package conf
 
 import (
+	"errors"
 	"fmt"
 	"time"
 )
@@ -11,6 +12,11 @@ import (
 //
 
 type Map map[string]interface{}
+
+// 将原生Map转换成Map对象
+func MapToMap(m map[string]interface{}) Map {
+	return m
+}
 
 // GetValueOrDefault 获取指定Key的值。 如果不存在返回默认值。
 func (m Map) GetValueOrDefault(key string, def interface{}) (interface{}, bool) {
@@ -46,17 +52,9 @@ func (m Map) MustStrMap(key string) map[string]string {
 	}
 }
 
-func (m Map) GetStrMapValue(key string) map[string]string {
-	return m.MustStrMap(key)
-}
-
 // MustMap 获取指定Key的值，确保返回值类型为 Map。 如果不存在，返回空Map
 func (m Map) MustMap(key string) Map {
 	return m.GetMapOrDefault(key, Map{})
-}
-
-func (m Map) GetMapValue(key string) Map {
-	return m.MustMap(key)
 }
 
 // GetMapOrDefault 获取指定Key的值，值类型为 Map。
@@ -101,13 +99,34 @@ func (m Map) GetArrayMapOrDefault(key string, def []Map) []Map {
 	}
 }
 
-// GetStringValue 获取指定Key的String值。 如果不存在，返回空字符串。
+// MustString 获取指定Key的String值。 如果不存在，返回空字符串。
 func (m Map) MustString(key string) string {
 	return m.GetStringOrDefault(key, "")
 }
 
-func (m Map) GetStringValue(key string) string {
-	return m.MustString(key)
+// MustStringNotEmpty 获取指定Key的String值。如果不存在，返回Error。
+func (m Map) MustStringNotEmpty(key string) (string, error) {
+	s := m.GetStringOrDefault(key, "")
+	if "" == s {
+		return s, errors.New("value of key <" + key + "> is empty")
+	} else {
+		return s, nil
+	}
+}
+
+// MustString2 获取并返回2个Key的值
+func (m Map) MustString2(a, b string) (x, y string) {
+	x = m.MustString(a)
+	y = m.MustString(b)
+	return
+}
+
+// MustString3 获取并返回3个Key的值
+func (m Map) MustString3(a, b, c string) (x, y, z string) {
+	x = m.MustString(a)
+	y = m.MustString(b)
+	z = m.MustString(c)
+	return
 }
 
 // GetStringOrDefault 获取指定Key的String值。
@@ -125,10 +144,6 @@ func (m Map) MustInt(key string) int {
 	return m.GetIntOrDefault(key, 0)
 }
 
-func (m Map) GetIntValue(key string) int {
-	return m.MustInt(key)
-}
-
 // GetIntOrDefault 获取指定Key的 Int 值。
 // 如果不存在，返回指定的默认值。
 func (m Map) GetIntOrDefault(key string, def int) int {
@@ -142,10 +157,6 @@ func (m Map) GetIntOrDefault(key string, def int) int {
 // MustInt32 // 获取指定Key的 Int32
 func (m Map) MustInt32(key string) int32 {
 	return m.GetInt32OrDefault(key, 0)
-}
-
-func (m Map) GetInt32Value(key string) int32 {
-	return m.MustInt32(key)
 }
 
 // GetInt32OrDefault 获取指定Key的 Int32 值。
@@ -163,10 +174,6 @@ func (m Map) MustInt64(key string) int64 {
 	return m.GetInt64OrDefault(key, 0)
 }
 
-func (m Map) GetInt64Value(key string) int64 {
-	return m.MustInt64(key)
-}
-
 // GetInt64OrDefault 获取指定Key的 Int64 值。
 // 如果不存在，返回指定的默认值。
 func (m Map) GetInt64OrDefault(key string, def int64) int64 {
@@ -180,10 +187,6 @@ func (m Map) GetInt64OrDefault(key string, def int64) int64 {
 // MustFloat32 获取指定Key的 Float32 值。如果不存在，返回 0。
 func (m Map) MustFloat32(key string) float32 {
 	return m.GetFloat32OrDefault(key, 0)
-}
-
-func (m Map) GetFloat32Value(key string) float32 {
-	return m.MustFloat32(key)
 }
 
 // GetFloat32OrDefault 获取指定Key的 Float32 值。
@@ -201,11 +204,6 @@ func (m Map) MustFloat64(key string) float64 {
 	return m.GetFloat64OrDefault(key, 0)
 }
 
-// 获取指定Key的 Float64 值。如果不存在，返回 0。
-func (m Map) GetFloat64Value(key string) float64 {
-	return m.MustFloat64(key)
-}
-
 // GetFloat64OrDefault 获取指定Key的 Float64 值。
 // 如果不存在，返回指定的默认值。
 func (m Map) GetFloat64OrDefault(key string, def float64) float64 {
@@ -219,10 +217,6 @@ func (m Map) GetFloat64OrDefault(key string, def float64) float64 {
 // MustBool 获取指定Key的 Bool 值。如果不存在，返回 false。
 func (m Map) MustBool(key string) bool {
 	return m.GetBoolOrDefault(key, false)
-}
-
-func (m Map) GetBoolValue(key string) bool {
-	return m.MustBool(key)
 }
 
 // GetBoolOrDefault 获取指定Key的 Bool 值。
