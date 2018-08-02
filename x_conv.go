@@ -193,7 +193,7 @@ func AnyToStr(value interface{}) string {
 	return fmt.Sprintf("%v", value)
 }
 
-func convertToBufferedReader(source interface{}) (*bufio.Reader, error) {
+func ConvertToBufferedReader(source interface{}) (*bufio.Reader, error) {
 	var bufReader *bufio.Reader
 	switch source.(type) {
 	case *os.File:

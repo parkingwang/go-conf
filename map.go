@@ -13,7 +13,7 @@ import (
 
 type Map map[string]interface{}
 
-// 将原生Map转换成Map对象
+// MapToMap 将Map[String]Any 转换成Map对象
 func MapToMap(m map[string]interface{}) Map {
 	return m
 }
