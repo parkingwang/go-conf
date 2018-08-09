@@ -47,11 +47,16 @@ func ConvertToInt(val interface{}) int {
 		return int(val.(float64))
 
 	default:
-		i, e := strconv.Atoi(AnyToStr(val))
-		if nil != e {
-			panic(e)
+		v := AnyToStr(val)
+		if "" == v {
+			return 0
+		} else {
+			if i, e := strconv.Atoi(v); nil != e {
+				return 0
+			} else {
+				return i
+			}
 		}
-		return i
 	}
 }
 
@@ -77,11 +82,16 @@ func ConvertToInt32(val interface{}) int32 {
 		return int32(val.(float64))
 
 	default:
-		i, e := strconv.ParseInt(AnyToStr(val), 10, 64)
-		if nil != e {
-			panic(e)
+		v := AnyToStr(val)
+		if "" == v {
+			return 0
+		} else {
+			if i, e := strconv.ParseInt(v, 10, 64); nil != e {
+				return 0
+			} else {
+				return int32(i)
+			}
 		}
-		return int32(i)
 	}
 }
 
@@ -106,11 +116,16 @@ func ConvertToInt64(val interface{}) int64 {
 		return int64(val.(float64))
 
 	default:
-		i, e := strconv.ParseInt(AnyToStr(val), 10, 64)
-		if nil != e {
-			panic(e)
+		v := AnyToStr(val)
+		if "" == v {
+			return 0
+		} else {
+			if i, e := strconv.ParseInt(v, 10, 64); nil != e {
+				return 0
+			} else {
+				return i
+			}
 		}
-		return i
 	}
 }
 
@@ -136,11 +151,16 @@ func ConvertToFloat32(val interface{}) float32 {
 		return float32(val.(int64))
 
 	default:
-		i, e := strconv.ParseFloat(AnyToStr(val), 32)
-		if nil != e {
-			panic(e)
+		v := AnyToStr(val)
+		if "" == v {
+			return 0
+		} else {
+			if i, e := strconv.ParseFloat(v, 64); nil != e {
+				return 0
+			} else {
+				return float32(i)
+			}
 		}
-		return float32(i)
 	}
 }
 
@@ -166,11 +186,16 @@ func ConvertToFloat64(val interface{}) float64 {
 		return float64(val.(int64))
 
 	default:
-		i, e := strconv.ParseFloat(AnyToStr(val), 64)
-		if nil != e {
-			panic(e)
+		v := AnyToStr(val)
+		if "" == v {
+			return 0
+		} else {
+			if i, e := strconv.ParseFloat(v, 64); nil != e {
+				return 0
+			} else {
+				return i
+			}
 		}
-		return i
 	}
 }
 
