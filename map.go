@@ -1,9 +1,5 @@
 package conf
 
-import (
-	"fmt"
-)
-
 //
 // Author: 陈永佳 chenyongjia@parkingwang.com, yoojiachen@gmail.com
 // 增加类型转换扩展的Map
@@ -22,7 +18,7 @@ func (m Map) GetValue(key string) (value Value, exist bool) {
 		if str, ok := rawValue.(string); ok {
 			return Value(str), true
 		} else {
-			return Value(fmt.Sprintf("%v", rawValue)), true
+			return Value(Value2String(rawValue)), true
 		}
 	} else {
 		return Value("0"), false
