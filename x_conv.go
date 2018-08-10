@@ -1,12 +1,8 @@
 package conf
 
 import (
-	"bufio"
 	"encoding/json"
 	"fmt"
-	"github.com/pkg/errors"
-	"io"
-	"os"
 	"strconv"
 	"strings"
 )
@@ -28,8 +24,8 @@ func ConvertToString(val interface{}) string {
 func ConvertToInt(val interface{}) int {
 	switch val.(type) {
 	case json.Number:
-		i, _ := val.(json.Number).Int64()
-		return int(i)
+		v, _ := val.(json.Number).Int64()
+		return int(v)
 
 	case int:
 		return val.(int)
@@ -47,16 +43,8 @@ func ConvertToInt(val interface{}) int {
 		return int(val.(float64))
 
 	default:
-		v := AnyToStr(val)
-		if "" == v {
-			return 0
-		} else {
-			if i, e := strconv.Atoi(v); nil != e {
-				return 0
-			} else {
-				return i
-			}
-		}
+		s := NonEmptyValueString(val)
+		return int(StringMustInt64(s))
 	}
 }
 
@@ -82,16 +70,8 @@ func ConvertToInt32(val interface{}) int32 {
 		return int32(val.(float64))
 
 	default:
-		v := AnyToStr(val)
-		if "" == v {
-			return 0
-		} else {
-			if i, e := strconv.ParseInt(v, 10, 64); nil != e {
-				return 0
-			} else {
-				return int32(i)
-			}
-		}
+		s := NonEmptyValueString(val)
+		return int32(StringMustInt64(s))
 	}
 }
 
@@ -116,16 +96,8 @@ func ConvertToInt64(val interface{}) int64 {
 		return int64(val.(float64))
 
 	default:
-		v := AnyToStr(val)
-		if "" == v {
-			return 0
-		} else {
-			if i, e := strconv.ParseInt(v, 10, 64); nil != e {
-				return 0
-			} else {
-				return i
-			}
-		}
+		s := NonEmptyValueString(val)
+		return StringMustInt64(s)
 	}
 }
 
@@ -151,16 +123,8 @@ func ConvertToFloat32(val interface{}) float32 {
 		return float32(val.(int64))
 
 	default:
-		v := AnyToStr(val)
-		if "" == v {
-			return 0
-		} else {
-			if i, e := strconv.ParseFloat(v, 64); nil != e {
-				return 0
-			} else {
-				return float32(i)
-			}
-		}
+		s := NonEmptyValueString(val)
+		return float32(StringMustFloat64(s))
 	}
 }
 
@@ -186,16 +150,8 @@ func ConvertToFloat64(val interface{}) float64 {
 		return float64(val.(int64))
 
 	default:
-		v := AnyToStr(val)
-		if "" == v {
-			return 0
-		} else {
-			if i, e := strconv.ParseFloat(v, 64); nil != e {
-				return 0
-			} else {
-				return i
-			}
-		}
+		s := NonEmptyValueString(val)
+		return StringMustFloat64(s)
 	}
 }
 
@@ -218,24 +174,26 @@ func AnyToStr(value interface{}) string {
 	return fmt.Sprintf("%v", value)
 }
 
-func ConvertToBufferedReader(source interface{}) (*bufio.Reader, error) {
-	var bufReader *bufio.Reader
-	switch source.(type) {
-	case *os.File:
-		bufReader = bufio.NewReader(source.(*os.File))
-
-	case string:
-		bufReader = bufio.NewReader(strings.NewReader(source.(string)))
-
-	case io.Reader:
-		bufReader = bufio.NewReader(source.(io.Reader))
-
-	case *bufio.Reader:
-		bufReader = source.(*bufio.Reader)
-
-	default:
-		return nil, errors.Errorf("unsupported source type, was: %t", source)
+func NonEmptyValueString(val interface{}) string {
+	if s := AnyToStr(val); "" == s {
+		return "0"
+	} else {
+		return s
 	}
+}
 
-	return bufReader, nil
+func StringMustInt64(s string) int64 {
+	if v, e := strconv.ParseInt(s, 10, 64); nil != e {
+		return 0
+	} else {
+		return v
+	}
+}
+
+func StringMustFloat64(s string) float64 {
+	if v, e := strconv.ParseFloat(s, 64); nil != e {
+		return 0
+	} else {
+		return v
+	}
 }

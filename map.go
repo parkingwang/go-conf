@@ -3,6 +3,7 @@ package conf
 import (
 	"errors"
 	"fmt"
+	"reflect"
 	"time"
 )
 
@@ -28,27 +29,24 @@ func (m Map) GetValueOrDefault(key string, def interface{}) (interface{}, bool) 
 }
 
 // MustStrMap 确保返回一个Str-Map对象，或者默认空对象。
-func (m Map) MustStrMap(key string) map[string]string {
-	if val, ok := m[key]; ok {
-		if out, ok := val.(map[string]string); ok {
-			return out
+func (m Map) MustStrMap(key string) (map[string]string, error) {
+	if value, ok := m[key]; ok {
+		if found, ok := value.(map[string]string); ok {
+			return found, nil
 		} else {
-			out = make(map[string]string)
-			if sm, ok := val.(map[string]interface{}); ok {
+			out := make(map[string]string)
+			if sm, ok := value.(map[string]interface{}); ok {
 				for k, v := range sm {
 					out[k] = ConvertToString(v)
 				}
-			} else if om, ok := val.(map[interface{}]interface{}); ok {
-				for k, v := range om {
-					out[k.(string)] = ConvertToString(v)
-				}
+				return out, nil
 			} else {
-				panic(fmt.Sprintf("Value of Key[%s] is not support map, value: %s", key, val))
+				msg := fmt.Sprintf("value of %s is not map[string]string/interface{}, was: %s", key, reflect.TypeOf(value))
+				return out, errors.New(msg)
 			}
-			return out
 		}
 	} else {
-		return make(map[string]string)
+		return make(map[string]string), nil
 	}
 }
 
@@ -61,14 +59,14 @@ func (m Map) MustMap(key string) Map {
 // 如果不存在，返回指定的默认值Map
 func (m Map) GetMapOrDefault(key string, def Map) Map {
 	if ret, ok := m.GetValueOrDefault(key, def); ok {
-		if sm, ok := ret.(map[string]interface{}); ok {
-			return sm
+		if found, ok := ret.(map[string]interface{}); ok {
+			return found
 		} else {
-			output := Map{}
+			out := Map{}
 			for k, v := range ret.(map[interface{}]interface{}) {
-				output[k.(string)] = v
+				out[AnyToStr(k)] = v
 			}
-			return output
+			return out
 		}
 	} else {
 		return def
@@ -89,11 +87,11 @@ func (m Map) GetArrayMapValue(key string) []Map {
 // 如果不存在，返回指定的默认Map列表
 func (m Map) GetArrayMapOrDefault(key string, def []Map) []Map {
 	if array, ok := m.GetValueOrDefault(key, def); ok {
-		outputs := make([]Map, 0)
+		out := make([]Map, 0)
 		for _, item := range array.([]interface{}) {
-			outputs = append(outputs, item.(map[string]interface{}))
+			out = append(out, item.(map[string]interface{}))
 		}
-		return outputs
+		return out
 	} else {
 		return def
 	}
@@ -235,15 +233,14 @@ func (m Map) MustDuration(key string) time.Duration {
 	return m.GetDurationOrDefault(key, 0)
 }
 
-// GetDurationOrDefault 获取指定Key的time.Duration值，如果不存在，返回指定默认值。
-// 如果Key所指向的值无法被解析成Duration，将引发Panic。
+// GetDurationOrDefault 获取指定Key的time.Duration值，如果不存在或解析错误，返回指定默认值。
 func (m Map) GetDurationOrDefault(key string, defaultT time.Duration) time.Duration {
 	str := m.MustString(key)
 	if "" == str {
 		return defaultT
 	}
 	if duration, err := time.ParseDuration(str); nil != err {
-		panic("Invalid period value, such as '200ms','3s', key: " + key + ",found:" + str)
+		return defaultT
 	} else {
 		return duration
 	}
