@@ -1,6 +1,9 @@
 package conf
 
-import "errors"
+import (
+	"errors"
+	"strings"
+)
 
 //
 // Author: 陈哈哈 chenyongjia@parkingwang.com, yoojiachen@gmail.com
@@ -29,4 +32,30 @@ func (m Map) MustString3(a, b, c string) (x, y, z string) {
 	y = m.MustString(b)
 	z = m.MustString(c)
 	return
+}
+
+// MustStringArray 获取并返回String数组
+func (m Map) MustStringArray(key string) ([]string, error) {
+	out := make([]string, 0)
+	if value, hit := m.GetOrDefault(key, out); hit {
+		switch value.(type) {
+
+		case []interface{}:
+			array := value.([]interface{})
+			out = make([]string, len(array))
+			for i, v := range array {
+				out[i] = Value2String(v)
+			}
+
+		case []string:
+			out = value.([]string)
+
+		case string:
+			out = strings.Split(value.(string), ",")
+
+		default:
+			return out, errors.New("value of key cannot convert to string array: " + key)
+		}
+	}
+	return out, nil
 }
