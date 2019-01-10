@@ -26,7 +26,3 @@ conf.Map 是 `map[string]interface{}` 类型的别名。它主要是提供了一
 
 - *LoadConfig* 加载指定配置文件夹名称或者TOML文件路径，返回全部配置文件的Map对象；
 - *LoadDirConfigText* 加载指定TOML配置文件目录，返回所有配置文件的合并Text文本； 
-
-### Map2Struct Map转Struct
-
-将Map对象，转换成Struct结构体对象。字段须声明`toml:"xxx_name"`。
