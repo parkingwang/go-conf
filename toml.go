@@ -68,8 +68,10 @@ func LoadDirConfigText(dirName string) ([]byte, error) {
 				return nil, errors.New("Failed to load file: %s" + path)
 			} else {
 				out.Write(bs)
+				out.WriteByte('\n')
 			}
 		}
 	}
+	out.WriteByte('\n')
 	return out.Bytes(), nil
 }
