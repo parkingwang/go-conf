@@ -22,6 +22,10 @@ func (m Map) GetStringOrDefault(key string, def string) string {
 	}
 }
 
+func (m Map) IsFieldEqualToString(key string, except string) bool {
+	return except == m.MustString(key)
+}
+
 // MustInt64 获取指定Key的 Int64 值。如果不存在，返回 0。
 func (m Map) MustInt64(key string) int64 {
 	return m.GetInt64OrDefault(key, 0)
@@ -34,6 +38,10 @@ func (m Map) GetInt64OrDefault(key string, def int64) int64 {
 	} else {
 		return val.Int64OrDefault(def)
 	}
+}
+
+func (m Map) IsFieldEqualToInt64(key string, except int64) bool {
+	return except == m.MustInt64(key)
 }
 
 // MustFloat64 获取指定Key的 Float64 值。如果不存在，返回 0。
