@@ -12,6 +12,12 @@ func MapToMap(m map[string]interface{}) Map {
 	return m
 }
 
+// 获取Key的Value对象。如果不存在，返回0值Value；
+func (m Map) MustValue(key string) Value {
+	v, _ := m.GetValue(key)
+	return v
+}
+
 // GetValue 获取Key的Value对象，返回对象保证非空。并返回Key是否存在的状态值。
 func (m Map) GetValue(key string) (value Value, exist bool) {
 	if rawValue, hit := m[key]; hit {
