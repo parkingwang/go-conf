@@ -266,3 +266,10 @@ func (im *ImmutableMap) IsEmpty() bool {
 func (im *ImmutableMap) IsNotEmpty() bool {
 	return !im.IsEmpty()
 }
+
+// ForEach KV
+func (im *ImmutableMap) ForEach(consumer func(name string, value interface{})) {
+	for k, v := range im.data {
+		consumer(k, v)
+	}
+}
