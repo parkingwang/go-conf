@@ -22,6 +22,7 @@ func MapToMap(m map[string]interface{}) *ImmutableMap {
 	return WrapImmutableMap(m)
 }
 
+// MapToMap 将Map[String]Any 转换成ImmutableMap对象
 func WrapImmutableMap(m map[string]interface{}) *ImmutableMap {
 	return &ImmutableMap{data: m}
 }
@@ -75,6 +76,12 @@ func (im *ImmutableMap) GetMapOrDefault(key string, def Map) Map {
 	} else {
 		return def
 	}
+}
+
+// MustMap 获取指定Key的值，类型为 Map。
+// 如果不存在或者值类型不是map[string]interface{}时，返回空Map
+func (im *ImmutableMap) MustImmutableMap(key string) *ImmutableMap {
+	return WrapImmutableMap(im.GetMapOrDefault(key, Map{}))
 }
 
 // MustMapArray 获取指定Key的Map列表。
