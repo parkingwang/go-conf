@@ -23,7 +23,7 @@ func LoadConfig(dirOrFile string) (Map, error) {
 
 	fi, err := os.Stat(dirOrFile)
 	if nil != err {
-		return nil, errors.WithMessage(err, "Failed to get file/dir info")
+		return nil, errors.New("Failed to get file/dir info")
 	}
 
 	var confBytes []byte
@@ -35,14 +35,14 @@ func LoadConfig(dirOrFile string) (Map, error) {
 		}
 	} else {
 		if bs, err := ioutil.ReadFile(dirOrFile); nil != err {
-			return nil, errors.WithMessage(err, "Failed to read .toml config file")
+			return nil, errors.New("Failed to read .toml config file")
 		} else {
 			confBytes = bs
 		}
 	}
 
 	if tree, err := toml.LoadBytes(confBytes); nil != err {
-		return nil, errors.WithMessage(err, "Failed to decode toml config file")
+		return nil, errors.New("Failed to decode toml config file")
 	} else {
 		return tree.ToMap(), nil
 	}
