@@ -1,4 +1,4 @@
-package conf
+package cfg
 
 import (
 	"bytes"
@@ -16,7 +16,7 @@ import (
 //
 
 // LoadConfig 读取一个TOML文件或者文件夹内所有TOML文件，返回一个Map对象。
-func LoadConfig(dirOrFile string) (Map, error) {
+func LoadConfig(dirOrFile string) (*Config, error) {
 	if "" == dirOrFile {
 		return nil, errors.New("Dir or file path is required")
 	}
@@ -44,7 +44,7 @@ func LoadConfig(dirOrFile string) (Map, error) {
 	if tree, err := toml.LoadBytes(confBytes); nil != err {
 		return nil, errors.New("Failed to decode toml config file")
 	} else {
-		return tree.ToMap(), nil
+		return &Config{data: tree.ToMap()}, nil
 	}
 
 }
