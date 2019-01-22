@@ -2,9 +2,9 @@ package cfg
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
-	"github.com/pelletier/go-toml"
-	"github.com/pkg/errors"
+	"github.com/BurntSushi/toml"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -18,33 +18,34 @@ import (
 // LoadConfig 读取一个TOML文件或者文件夹内所有TOML文件，返回一个Map对象。
 func LoadConfig(dirOrFile string) (*Config, error) {
 	if "" == dirOrFile {
-		return nil, errors.New("Dir or file path is required")
+		return nil, errors.New("dir or file path is required")
 	}
 
 	fi, err := os.Stat(dirOrFile)
 	if nil != err {
-		return nil, errors.New("Failed to get file/dir info")
+		return nil, errors.New("failed to get file/dir info")
 	}
 
-	var confBytes []byte
+	var buffer []byte
 	if fi.IsDir() {
 		if bs, err := LoadDirConfigText(dirOrFile); nil != err {
 			return nil, err
 		} else {
-			confBytes = bs
+			buffer = bs
 		}
 	} else {
 		if bs, err := ioutil.ReadFile(dirOrFile); nil != err {
-			return nil, errors.New("Failed to read .toml config file")
+			return nil, errors.New("failed to read .toml config file")
 		} else {
-			confBytes = bs
+			buffer = bs
 		}
 	}
 
-	if tree, err := toml.LoadBytes(confBytes); nil != err {
-		return nil, errors.New("Failed to decode toml config file")
+	m := make(map[string]interface{})
+	if _, err := toml.Decode(string(buffer), &m); nil != err {
+		return nil, err
 	} else {
-		return &Config{data: tree.ToMap()}, nil
+		return &Config{data: m}, nil
 	}
 
 }
@@ -53,10 +54,10 @@ func LoadConfig(dirOrFile string) (*Config, error) {
 func LoadDirConfigText(dirName string) ([]byte, error) {
 	out := new(bytes.Buffer)
 	if files, err := ioutil.ReadDir(dirName); nil != err {
-		return nil, errors.New("Failed to list file in dir: " + dirName)
+		return nil, errors.New("failed to list file in dir: " + dirName)
 	} else {
 		if 0 == len(files) {
-			return nil, errors.New("Config file NOT FOUND in dir: " + dirName)
+			return nil, errors.New("config file NOT FOUND in dir: " + dirName)
 		}
 		for _, f := range files {
 			name := f.Name()
