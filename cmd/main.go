@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
-	"parkingwang.com/go-conf"
+	"github.com/parkingwang/go-conf"
 )
 
 func main() {

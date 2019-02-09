@@ -115,6 +115,7 @@ func (cfg *Config) GetStringOrDefault(key string, def string) string {
 	}
 }
 
+// 返回指定Key的值是否与预期的相等
 func (cfg *Config) IsFieldEqualToString(key string, except string) bool {
 	return except == cfg.MustString(key)
 }
@@ -134,6 +135,7 @@ func (cfg *Config) GetInt64OrDefault(key string, def int64) int64 {
 	}
 }
 
+// 返回指定Key的值是否与预期的相等
 func (cfg *Config) IsFieldEqualToInt64(key string, except int64) bool {
 	return except == cfg.MustInt64(key)
 }
@@ -186,14 +188,15 @@ func (cfg *Config) GetDurationOrDefault(key string, def time.Duration) time.Dura
 	}
 }
 
-// MustStringNotEmpty 获取指定Key的String值。
-// 如果不存在，返回Error。
-func (cfg *Config) MustStringNotEmpty(key string) (string, error) {
+////
+
+// EnsureString 获取指定Key的String值。如果不存在，抛出Panic错误。
+func (cfg *Config) EnsureString(key string) string {
 	str := cfg.GetStringOrDefault(key, "")
 	if "" == str {
-		return str, errors.New("value of key <" + key + "> is empty")
+		panic("value of key <" + key + "> is empty")
 	} else {
-		return str, nil
+		return str
 	}
 }
 
