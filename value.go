@@ -1,10 +1,10 @@
 package cfg
 
 import (
-	"strconv"
-	"time"
-	"strings"
 	"fmt"
+	"strconv"
+	"strings"
+	"time"
 )
 
 // Value是字符串数据的别名
@@ -67,30 +67,36 @@ func Value2String(value interface{}) string {
 }
 
 // 将Any类型，转换成String
-func ToString(val interface{}) string {
-	switch val.(type) {
+func ToString(values interface{}) string {
+	switch values.(type) {
 	case string:
-		return val.(string)
+		return values.(string)
 
 	case int:
-		i := int64(val.(int))
-		return strconv.FormatInt(i, 10)
+		return strconv.FormatInt(int64(values.(int)), 10)
+
+	case uint:
+		return strconv.FormatInt(int64(values.(int)), 10)
 
 	case int32:
-		i := int64(val.(int32))
-		return strconv.FormatInt(i, 10)
+		return strconv.FormatInt(int64(values.(int32)), 10)
+
+	case uint32:
+		return strconv.FormatInt(int64(values.(int32)), 10)
 
 	case int64:
-		return strconv.FormatInt(val.(int64), 10)
+		return strconv.FormatInt(values.(int64), 10)
+
+	case uint64:
+		return strconv.FormatInt(values.(int64), 10)
 
 	case float32:
-		f := float64(val.(float32))
-		return strconv.FormatFloat(f, 'E', -1, 32)
+		return strconv.FormatFloat(float64(values.(float32)), 'E', -1, 32)
 
 	case float64:
-		return strconv.FormatFloat(val.(float64), 'E', -1, 64)
+		return strconv.FormatFloat(values.(float64), 'E', -1, 64)
 
 	default:
-		return fmt.Sprintf("%v", val)
+		return fmt.Sprintf("%v", values)
 	}
 }
