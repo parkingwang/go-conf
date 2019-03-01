@@ -15,12 +15,8 @@ type Config struct {
 	data map[string]interface{}
 }
 
-// ConfigToConfig 将Config[String]Any 转换成 ImmutableConfig 对象
-func WrapConfig(m map[string]interface{}) *Config {
-	return Wrap(m)
-}
 
-// ConfigToConfig 将Config[String]Any 转换成 ImmutableConfig 对象
+// Wrap 将 map[String]interface{} 转换成 Config 对象
 func Wrap(m map[string]interface{}) *Config {
 	return &Config{data: m}
 }
@@ -257,6 +253,35 @@ func (cfg *Config) MustStringArray(key string) ([]string, error) {
 		}
 	}
 	return out, nil
+}
+
+// 转换成StringMap对象
+func (cfg *Config) GetStringMapOrDefault(key string, def map[string]string) (map[string]string, error) {
+	if v , hit := cfg.data[key]; !hit {
+		return def, nil
+	}else{
+		switch v.(type) {
+		case map[string]string:
+			return v.(map[string]string), nil
+
+		case map[string]interface{}:
+			vmap := v.(map[string]interface{})
+			omap := make(map[string]string, len(vmap))
+			for k, v := range vmap {
+				omap[k] = Value2String(v)
+			}
+			return omap, nil
+
+		default:
+			return nil, errors.New("value cannot convert to map[string]string: key=" + key)
+		}
+	}
+}
+
+//
+
+func (cfg *Config) RefMap() map[string]interface{} {
+	return cfg.data
 }
 
 // Contains 返回Config是否包含指定Key
