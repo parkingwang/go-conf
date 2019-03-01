@@ -15,9 +15,21 @@ type Config struct {
 	data map[string]interface{}
 }
 
-// ConfigToConfig 将Config[String]Any 转换成ImmutableConfig对象
+// ConfigToConfig 将Config[String]Any 转换成 ImmutableConfig 对象
 func WrapConfig(m map[string]interface{}) *Config {
+	return Wrap(m)
+}
+
+// ConfigToConfig 将Config[String]Any 转换成 ImmutableConfig 对象
+func Wrap(m map[string]interface{}) *Config {
 	return &Config{data: m}
+}
+
+// 如果指定Key字段存在时，通过consumer函数处理返回值
+func (cfg *Config) IfPresent(key string, consumer func(value interface{})) {
+	if value, ok := cfg.data[key]; ok {
+		consumer(value)
+	}
 }
 
 // 获取Key的Value对象。
@@ -38,6 +50,12 @@ func (cfg *Config) GetValue(key string) (value Value, exist bool) {
 		}
 	} else {
 		return Value("0"), false
+	}
+}
+
+func (cfg *Config) IfPresentValue(key string, consumer func(value Value)) {
+	if value, ok := cfg.GetValue(key); ok {
+		consumer(value)
 	}
 }
 
